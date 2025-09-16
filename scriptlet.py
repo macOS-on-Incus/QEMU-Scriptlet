@@ -6,9 +6,13 @@ DELETED_DEVICES = {
 
 # On the other hand, a few devices need to be added
 ADDED_DEVICES = {
+  'audiodev': {
+    'snd0': {'driver': 'spice'}
+  },
   'device': {
     'apple_smc': {'driver': 'isa-applesmc',
                   'osk': 'ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc'},
+    'qemu_audio': {'driver': 'virtio-sound-pci', 'audiodev': 'snd0'},
     'qemu_sata': {'driver': 'ich9-ahci'},
     'qemu_vga': {'driver': 'VGA'},
     'qemu_usb': {'driver': 'qemu-xhci'},
