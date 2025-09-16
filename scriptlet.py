@@ -14,7 +14,7 @@ ADDED_DEVICES = {
                   'osk': 'ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc'},
     'qemu_audio': {'driver': 'virtio-sound-pci', 'audiodev': 'snd0'},
     'qemu_sata': {'driver': 'ich9-ahci'},
-    'qemu_vga': {'driver': 'VGA'},
+    'qemu_vga': {'driver': 'virtio-vga'},
     'qemu_usb': {'driver': 'qemu-xhci'},
     'usb_keyboard': {'driver': 'usb-kbd', 'bus': 'qemu_usb.0'},
     'usb_tablet': {'driver': 'usb-tablet', 'bus': 'qemu_usb.0'}
