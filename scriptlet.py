@@ -1,7 +1,8 @@
 # Some devices don’t make a lot of sense in the macOS world, at least for now
 DELETED_DEVICES = {
   'chardev': ['spice-usb-chardev1', 'spice-usb-chardev2', 'spice-usb-chardev3'],
-  'device': ['gpu', 'keyboard', 'spice-usb1', 'spice-usb2', 'spice-usb3', 'tablet', 'usb']
+  'device': ['gpu', 'keyboard', 'pcie8', 'pcie9', 'pcie10', 'pcie11', 'pcie12', 'spice-usb1',
+             'spice-usb2', 'spice-usb3', 'tablet', 'usb']
 }
 
 # On the other hand, a few devices need to be added
@@ -108,13 +109,16 @@ def patch_config(devices):
   initial_conf = get_qemu_conf()
   conf = []
 
-  # Remove a few unusable devices
+  # Remove a few unusable devices and immediately patch 9p shares
   deleted = ['{} "qemu_{}"'.format(prefix, name)
              for (prefix, devices) in DELETED_DEVICES.items() for name in devices]
   for device in initial_conf:
     name = device['name']
     if name in deleted:
       continue
+    if 'driver' in device['entries'] and device['entries']['driver'] == 'virtio-9p-pci':
+      device['entries'].pop('addr')
+      device['entries']['bus'] = 'pcie.0'
     conf.append(device)
 
   # Add necessary devices
@@ -126,7 +130,8 @@ def patch_config(devices):
   # Add placeholder SATA disks
   sata_count = 0
   for (name, device) in devices.items():
-    if device['type'] == 'disk' and not name.startswith('iso-volume'):
+    if (device['type'] == 'disk' and not name.startswith('iso-volume')
+                                 and not device.get('path', '/') == '/'):
       conf.append({'name': 'device "sata{}"'.format(sata_count),
                    'comment': 'Automatically generated SATA disk',
                    'entries': {'driver': 'virtio-blk-pci', 'drive': 'devzero', 'share-rw': 'on'}})
