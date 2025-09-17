@@ -15,7 +15,7 @@ ADDED_DEVICES = {
     'qemu_audio': {'driver': 'virtio-sound-pci', 'audiodev': 'snd0'},
     'qemu_sata': {'driver': 'ich9-ahci'},
     'qemu_vga': {'driver': 'virtio-vga'},
-    'qemu_usb': {'driver': 'qemu-xhci'},
+    'qemu_usb': {'driver': 'qemu-xhci', 'p2': '8', 'p3': '8'},
     'usb_keyboard': {'driver': 'usb-kbd', 'bus': 'qemu_usb.0'},
     'usb_tablet': {'driver': 'usb-tablet', 'bus': 'qemu_usb.0'}
   }
