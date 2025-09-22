@@ -1,11 +1,18 @@
 # Some devices don’t make a lot of sense in the macOS world, at least for now
 DELETED_DEVICES = {
-  'chardev': ['spice-usb-chardev1', 'spice-usb-chardev2', 'spice-usb-chardev3'],
-  'device': ['gpu', 'keyboard', 'pcie8', 'pcie9', 'pcie10', 'pcie11', 'pcie12', 'spice-usb1',
-             'spice-usb2', 'spice-usb3', 'tablet', 'usb']
+  'device': ['qemu_gpu', 'qemu_keyboard', 'qemu_pcie8', 'qemu_pcie9', 'qemu_pcie10', 'qemu_pcie11',
+             'qemu_pcie12', 'qemu_spice-usb1', 'qemu_spice-usb2', 'qemu_spice-usb3', 'qemu_tablet',
+             'qemu_usb']
 }
 
-# On the other hand, a few devices need to be added
+# Some need to be patched
+PATCHED_DEVICES = {
+  'device': {
+    'dev-qemu_serial': {'bus': 'pcie.0', 'addr': None}
+  }
+}
+
+# And a few need to be added
 ADDED_DEVICES = {
   'audiodev': {
     'snd0': {'driver': 'spice'}
@@ -18,7 +25,10 @@ ADDED_DEVICES = {
     'qemu_vga': {'driver': 'virtio-vga'},
     'qemu_usb': {'driver': 'qemu-xhci', 'p2': '8', 'p3': '8'},
     'usb_keyboard': {'driver': 'usb-kbd', 'bus': 'qemu_usb.0'},
-    'usb_tablet': {'driver': 'usb-tablet', 'bus': 'qemu_usb.0'}
+    'usb_tablet': {'driver': 'usb-tablet', 'bus': 'qemu_usb.0'},
+    'qemu_spice_usb1': {'driver': 'usb-redir', 'chardev': 'qemu_spice-usb-chardev1'},
+    'qemu_spice_usb2': {'driver': 'usb-redir', 'chardev': 'qemu_spice-usb-chardev2'},
+    'qemu_spice_usb3': {'driver': 'usb-redir', 'chardev': 'qemu_spice-usb-chardev3'}
   }
 }
 
@@ -110,8 +120,10 @@ def patch_config(devices):
   conf = []
 
   # Remove a few unusable devices and immediately patch 9p shares
-  deleted = ['{} "qemu_{}"'.format(prefix, name)
+  deleted = ['{} "{}"'.format(prefix, name)
              for (prefix, devices) in DELETED_DEVICES.items() for name in devices]
+  patched = {'{} "{}"'.format(prefix, name):conf for (prefix, entries) in PATCHED_DEVICES.items()
+                                                 for (name, conf) in entries.items()}
   for device in initial_conf:
     name = device['name']
     if name in deleted:
@@ -119,6 +131,12 @@ def patch_config(devices):
     if 'driver' in device['entries'] and device['entries']['driver'] == 'virtio-9p-pci':
       device['entries'].pop('addr')
       device['entries']['bus'] = 'pcie.0'
+    if name in patched:
+      for (key, value) in patched[name].items():
+        if value == None:
+          device['entries'].pop(key)
+        else:
+          device['entries'][key] = value
     conf.append(device)
 
   # Add necessary devices
