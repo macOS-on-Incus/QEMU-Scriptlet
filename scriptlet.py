@@ -131,7 +131,7 @@ def patch_config(devices):
   sata_count = 0
   for (name, device) in devices.items():
     if (device['type'] == 'disk' and not name.startswith('iso-volume')
-                                 and not device.get('path', '/') == '/'):
+                                 and device.get('path', '/') == '/'):
       conf.append({'name': 'device "sata{}"'.format(sata_count),
                    'comment': 'Automatically generated SATA disk',
                    'entries': {'driver': 'virtio-blk-pci', 'drive': 'devzero', 'share-rw': 'on'}})
