@@ -2,7 +2,7 @@
 indent-string = "  "
 
 [MASTER]
-additional-builtins = device_add, device_del, get_qemu_cmdline, get_qemu_conf, log_info, log_warn, netdev_add, qom_get, qom_list, qom_set, run_command, run_qmp, set_qemu_cmdline, set_qemu_conf
+additional-builtins = device_add, device_del, fail, get_qemu_cmdline, get_qemu_conf, log_info, log_warn, netdev_add, qom_get, qom_list, qom_set, run_command, run_qmp, set_qemu_cmdline, set_qemu_conf
 
 [MESSAGES CONTROL]
 disable = consider-using-f-string, missing-module-docstring, singleton-comparison

@@ -199,6 +199,8 @@ def remap_devices():
 
 def qemu_hook(instance, stage):
   """Scriptlet entry point"""
+  if 'image.os' not in instance.config or instance.config['image.os'].lower() != "macos":
+    fail('[macOS scriptlet] image.os needs to be set to macOS')
   if stage == 'config':
     patch_config(instance.expanded_devices)
   elif stage == 'pre-start':
